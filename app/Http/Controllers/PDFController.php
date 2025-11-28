@@ -1,4 +1,4 @@
-<?php
+<!-- 
 
 namespace App\Http\Controllers;
 
@@ -22,4 +22,4 @@ class PDFController extends Controller
         $pdf = Pdf::loadView('pdf.pdf-absensi', ['absensi' => $absen]);
         return $pdf->download('daftar-hadir.pdf');
     }
-}
+} -->

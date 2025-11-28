@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\User;
 
-class registerController extends Controller
+use Illuminate\Support\Facades\Http;
+
+
+class RegisterController extends Controller
 {
     public function showRegisterForm()
     {
@@ -16,27 +20,30 @@ class registerController extends Controller
     {
         // Validasi data
         $request->validate([
+            'nama' => 'required|string|max:255',
             'email' => 'required|email|max:100',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|string|in:admin,dosen',  // Validasi untuk role
+            
         ]);
 
-        // Kirim data ke API CodeIgniter
-        $response = Http::post('http://localhost:8080/api/register', [
+        User::create([
+            
             'email' => $request->email,
-            'password' => $request->password,
-            'role' => $request->role,  // Mengirimkan role
+            'nama' => $request->nama,
+            'password' => bcrypt($request->password),
+            'role' => 'user'
         ]);
 
-        if ($response->successful()) {
-            return redirect()->route('register.form')->with('success', 'Registration successful!');
-        }
+       
+        // if ($response->successful()) {
+        //     return redirect()->route('register.form')->with('success', 'Registration successful!');
+        // }
 
-        $data = $response->json();
+        // $data = $response->json();
 
 // Periksa apakah response memiliki key 'message'
-        $message = $data['message'] ?? 'Registration failed. Please try again.';
-        return redirect()->route('register.form')->with('error', $message);
+        // $message = $data['message'] ?? 'Registration failed. Please try again.';
+        return redirect()->route('register.form')->with('success', 'Registration successful!');
 
     }
 }

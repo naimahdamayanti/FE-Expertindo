@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Session;
+
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
+     public function showLoginForm()
     {
         // Jika user sudah login, redirect ke dashboard
-        if (session()->has('token')) {
+        if (session()->has('id') && session()->has('role')) {
             return redirect()->route('dashboard');
         }
 
@@ -26,7 +26,7 @@ class LoginController extends Controller
         ]);
 
         try {
-            $response = Http::post('http://localhost:8080/api/login', [
+            $response = Http::post('http://localhost:8080/api/auth/login', [
                 'email' => $request->email,
                 'password' => $request->password,
             ]);
@@ -35,20 +35,38 @@ class LoginController extends Controller
                 $data = $response->json();
 
                 // Cek apakah respons memiliki data user dan role
-                if (!isset($data['user']) || !isset($data['user']['role'])) {
+                if (!isset($data['user'])) {
                     return back()->withErrors([
                         'login_error' => 'Data user atau role tidak ditemukan dari API.'
-                    ]);
+                    ])->withInput($request->only('email'));
                 }
 
+                $user = $data['user'];
+
+                if (!isset($user['email']) || !isset($user['role'])) {
+                    return back()->withErrors([
+                        'login_error' => 'Data user atau role tidak lengkap dari API.'
+                    ])->withInput($request->only('email'));
+                }
+
+                // Validasi role harus admin atau user
+                if (!in_array($user['role'], ['admin', 'user'])) {
+                    return back()->withErrors([
+                        'login_error' => 'Role tidak valid.'
+                    ])->withInput($request->only('email'));
+                }
+
+                session()->flush();
                 // Simpan data ke session, termasuk user dan role
                 session([
-                    'token' => $data['token'],
-                    'user_id' => $data['user_id'],
-                    'email' => $request->email,
-                    'user' => (object) $data['user'] // Simpan sebagai object supaya bisa akses ->role
+                    'id' => $user['id'],
+                    'email' => $user['email'],
+                    'nama' => $user['nama'] ?? $user['nama'] ?? 'Admin',
+                    'role' => $user['role'],
+                    'user' => (object) $user,
+                    'logged_in' => true
                 ]);
-
+                $request->session()->regenerate();
 
                 return redirect()->route('dashboard')->with('success', 'Login berhasil!');
             }

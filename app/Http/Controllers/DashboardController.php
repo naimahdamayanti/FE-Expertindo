@@ -2,22 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Dosen;
-use App\Models\Mahasiswa;
-use App\Models\Matkul;
-use App\Models\Absensi;
-use Illuminate\Support\Facades\Schema;
+use App\Models\Jadwal;
+use App\Models\Staff;
+use App\Models\Training;
+use App\Models\Testimoni;
+use App\Models\Sertifikasi;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class DashboardController extends Controller
 {
     public function index(){
-        $dosen = Dosen::count();
-        $mahasiswa = Mahasiswa::count();
-        $matkul = Matkul::count();
-        $absensi = Absensi::count();
+        $jadwal = Jadwal::count();
+        $staff = Staff::count();
+        $training = Training::count();
+        $testimoni = Testimoni::count();
+        $sertifikasi = Sertifikasi::count();
     
-        return view('dashboard', compact('dosen', 'mahasiswa', 'matkul', 'absensi'));
+        $user = (object) [
+        'id' => session('id'),
+        'nama' => session('nama', 'User'),
+        'email' => session('email'),
+        'role' => session('role', 'user')
+        ];
+        
+        return view('dashboard', compact('jadwal', 'staff', 'training','testimoni'));
     }
     
 
