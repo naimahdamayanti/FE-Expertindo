@@ -126,6 +126,110 @@
         font-size: 13px;
         color: #999;
     }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-overlay.show {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 450px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: modalFadeIn 0.3s ease-out;
+    }
+    
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    
+    .modal-icon {
+        width: 80px;
+        height: 80px;
+        background: #ffebee;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .modal-icon i {
+        font-size: 40px;
+        color: #d32f2f;
+    }
+    
+    .modal-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .modal-text {
+        font-size: 15px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    .btn-modal {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 15px;
+    }
+    
+    .btn-yes {
+        background: #d32f2f;
+        color: white;
+    }
+    
+    .btn-yes:hover {
+        background: #b71c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+    }
+    
+    .btn-no {
+        background: #e0e0e0;
+        color: #333;
+    }
+    
+    .btn-no:hover {
+        background: #bdbdbd;
+    }
     
     @media (max-width: 768px) {
         .profile-layout {
@@ -170,7 +274,7 @@
                 </div>
             </a>
             
-            <a href="#" class="menu-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <a href="#" class="menu-item" onclick="event.preventDefault(); showLogoutModal();">
                 <div class="menu-icon red">
                     <i class="fas fa-sign-out-alt"></i>
                 </div>
@@ -186,9 +290,24 @@
                 </div>
                 <div class="menu-content">
                     <div class="menu-title">Profil Kami</div>
-                    <div class="menu-subtitle">Ubah informasi profil anda</div>
+                    <div class="menu-subtitle">Lihat informasi profil anda</div>
                 </div>
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Logout -->
+<div class="modal-overlay" id="logoutModal">
+    <div class="modal-content">
+        <div class="modal-icon">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3 class="modal-title">Peringatan Keluar!</h3>
+        <p class="modal-text">Apakah Anda yakin ingin Keluar?</p>
+        <div class="modal-buttons">
+            <button class="btn-modal btn-yes" onclick="confirmLogout()">YA</button>
+            <button class="btn-modal btn-no" onclick="closeLogoutModal()">TIDAK</button>
         </div>
     </div>
 </div>
@@ -197,5 +316,26 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
+
+<script>
+    function showLogoutModal() {
+        document.getElementById('logoutModal').classList.add('show');
+    }
+    
+    function closeLogoutModal() {
+        document.getElementById('logoutModal').classList.remove('show');
+    }
+    
+    function confirmLogout() {
+        document.getElementById('logout-form').submit();
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLogoutModal();
+        }
+    });
+</script>
 
 @endsection
