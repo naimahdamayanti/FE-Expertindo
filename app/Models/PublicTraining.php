@@ -11,9 +11,10 @@ class PublicTraining extends Model
     protected $table = 'public_training';
     protected $primaryKey = 'id_public';
     protected $fillable = [
-        'nama',
-        'deskripsi',
+        'gambar',
     ];
+    
+    public $timestamps = false;
 
     public function jadwal()
     {

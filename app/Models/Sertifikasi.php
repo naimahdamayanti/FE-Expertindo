@@ -12,9 +12,10 @@ class Sertifikasi extends Model
     protected $table = 'sertifikasi';
     protected $primaryKey = 'id_sertifikasi';
     protected $fillable = [
-        'nama',
-        'deskripsi',
+        'gambar'
     ];
+
+    public $timestamps = false;
 
     public function jadwal()
     {

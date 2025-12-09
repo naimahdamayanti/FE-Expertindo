@@ -9,6 +9,7 @@ if ($user && $user->role === 'admin') {
         (object)[ 'title' => 'Home', 'path' => 'dashboard', 'icon' => 'lni lni-home' ],
         (object)[ 'title' => 'Jadwal', 'path' => 'jadwal', 'icon' => 'lni lni-calendar' ],
         (object)[ 'title' => 'Artikel', 'path' => 'artikel', 'icon' => 'lni lni-write' ],
+        (object)[ 'title' => 'In House Training', 'path' => 'training', 'icon' => 'fa-solid fa-building' ],
         (object)[ 'title' => 'Kontak', 'path' => 'kontak', 'icon' => 'lni lni-phone' ],
     ];
 } elseif ($user && $user->role === 'user') {
@@ -43,6 +44,97 @@ if ($user && $user->role === 'admin') {
     <style>
         .navbar {
             background: linear-gradient(135deg, #ff0000ff 0%, #ff0000ff 100%);
+            padding: 15px 0;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+
+        .navbar-brand img {
+            height: 45px;
+            width: auto;
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .navbar-collapse {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+
+        /* Navigation menu di tengah */
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+            list-style: none;
+            padding: 0;
+        }
+
+        .navbar-nav .nav-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(0, 0, 0, 1) !important;
+            font-weight: 500;
+            padding: 10px 18px !important;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background: rgba(241, 236, 236, 1);
+            color: black !important;
+        }
+
+        .navbar-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: black !important;
+        }
+
+        /* User panel section di kanan */
+        .ms-auto {
+            margin-left: auto !important;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
         }
 
         .container {
@@ -58,6 +150,15 @@ if ($user && $user->role === 'admin') {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
             backdrop-filter: blur(10px);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-panel-navbar:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .user-avatar {
@@ -70,6 +171,7 @@ if ($user && $user->role === 'admin') {
             justify-content: center;
             color: black;
             border: 2px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
         }
         
         .user-info {
@@ -82,6 +184,8 @@ if ($user && $user->role === 'admin') {
             font-size: 14px;
             font-weight: 600;
             margin: 0;
+            line-height: 1.2;
+            white-space: nowrap;
         }
         
         .user-info .user-role {
@@ -90,6 +194,8 @@ if ($user && $user->role === 'admin') {
             display: flex;
             align-items: center;
             gap: 5px;
+            line-height: 1.2;
+            white-space: nowrap;
         }
         
         .status-indicator {
@@ -105,11 +211,18 @@ if ($user && $user->role === 'admin') {
             50% { opacity: 0.5; }
         }
         
+        .ms-auto form {
+            margin: 0 !important;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
         .logout-button {
             background: linear-gradient(135deg, #f5365c, #f56036);
             border: none;
             color: black;
-            padding: 8px 20px;
+            padding: 10px 20px;
             font-weight: 600;
             border-radius: 30px;
             cursor: pointer;
@@ -119,6 +232,8 @@ if ($user && $user->role === 'admin') {
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(245, 54, 92, 0.3);
             font-size: 14px;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         
         .logout-button:hover {
@@ -134,8 +249,31 @@ if ($user && $user->role === 'admin') {
         .logout-button:hover i {
             transform: rotate(-15deg);
         }
+
+        .navbar-toggler {
+            border: none;
+            padding: 5px 10px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
         
-        /* Mobile adjustments */
+        @media (max-width: 1200px) {
+            .navbar-nav {
+                gap: 5px;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 8px 12px !important;
+                font-size: 14px;
+            }
+            
+            .user-info {
+                display: none;
+            }
+        }
+
         @media (max-width: 991px) {
             .user-panel-navbar {
                 margin-top: 10px;
@@ -143,33 +281,64 @@ if ($user && $user->role === 'admin') {
                 justify-content: center;
             }
             
-            .navbar-nav {
+            .navbar .container {
+                flex-wrap: wrap;
+            }
+            
+            .navbar-collapse {
+                flex-direction: column;
+                width: 100%;
                 margin-top: 15px;
+            }
+
+            .navbar-nav .nav-item {
+                width: 100%;
+            }
+            
+            .navbar-nav .nav-link {
+                width: 100%;
+                justify-content: flex-start;
+                padding: 12px 15px !important;
+            }
+            
+            .ms-auto {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin-top: 15px;
+            }
+            
+            .user-panel-navbar {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .user-info {
+                display: flex;
+            }
+            
+            .ms-auto form {
+                width: 100%;
             }
             
             .logout-button {
                 width: 100%;
                 justify-content: center;
-                margin-top: 10px;
             }
         }
         
-        .navbar-nav .nav-link {
-            color: rgba(0, 0, 0, 1) !important;
-            font-weight: 500;
-            padding: 8px 15px !important;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-        }
-        
-        .navbar-nav .nav-link:hover {
-            background: rgba(241, 236, 236, 1);
-            color: black !important;
-        }
-        
-        .navbar-nav .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: black !important;
+        @media (min-width: 992px) {
+            .navbar-expand-lg .navbar-collapse {
+                display: flex !important;
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .navbar-expand-lg .navbar-nav {
+                flex-direction: row;
+                align-items: center;
+            }
         }
 
         /* Footer */
@@ -383,7 +552,8 @@ if ($user && $user->role === 'admin') {
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-12">
-                        <nav class="navbar navbar-expand-lg navbar-dark">
+                        <nav class="navbar navbar-expand-lg">
+                            <div class="container">
                             <!-- Logo -->
                             <a class="navbar-brand" href="{{ url('dashboard') }}">
                                 <img src="{{ asset('template/assets/img/logo/logo-expertindo.png') }}" 
@@ -395,18 +565,18 @@ if ($user && $user->role === 'admin') {
                             <button class="navbar-toggler" 
                                     type="button" 
                                     data-bs-toggle="collapse" 
-                                    data-bs-target="#navbarContent" 
-                                    aria-controls="navbarContent" 
-                                    aria-expanded="false" 
+                                    data-bs-target="#navbarNav"
+                                    aria-controls="navbarNav"
+                                    aria-expanded="false"
                                     aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             
                             <!-- Navbar Content -->
-                            <div class="collapse navbar-collapse" id="navbarContent">
+                            <div class="collapse navbar-collapse" id="navbarNav">
                                 <!-- Menu Navigation -->
                                 @if ($user)
-                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <ul class="navbar-nav">
                                     @foreach($menus as $menu)
                                     <li class="nav-item">
                                         <a href="{{ url($menu->path) }}"
@@ -419,20 +589,21 @@ if ($user && $user->role === 'admin') {
                                 </ul>
                                 
                                 <!-- User Panel & Logout -->
-                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                <div class="ms-auto">
                                     <!-- User Info -->
-                                    <div class="user-panel-navbar">
+                                    <a href="{{ route('profile') }}" class="user-panel-navbar">
                                         <div class="user-avatar">
+                                            
                                             <i class="fas fa-user"></i>
                                         </div>
                                         <div class="user-info">
-                                            <p class="user-email mb-0">{{ session('nama', $user->nama ?? $user->email) }}</p>
+                                            <p class="user-email">{{ session('email', $user->nama ?? $user->email) }}</p>
                                             <span class="user-role">
                                                 <span class="status-indicator"></span>
                                                 {{ $user->role === 'admin' ? 'Administrator' : 'Pengguna' }}
                                             </span>
                                         </div>
-                                    </div>
+                                    </a>
                                     
                                     <!-- Logout Button -->
                                     <form action="{{ route('logout') }}" method="POST" class="m-0">
@@ -453,6 +624,7 @@ if ($user && $user->role === 'admin') {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </header>
 

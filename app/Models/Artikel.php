@@ -8,10 +8,12 @@ class Artikel extends Model
 {
     protected $table = 'artikel';
 
-    protected $primaryKey = 'id_artikel';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'judul',
-        'isi',
         'tgl_rilis',
+        'gambar',
+        'isi'
+        
     ];
 }

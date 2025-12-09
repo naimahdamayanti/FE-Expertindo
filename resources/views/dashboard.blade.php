@@ -11,15 +11,15 @@ if ($user && $user->role === 'admin') {
    $cards = [
     ['title' => 'Total Artikel', 'model' => \App\Models\Artikel::class, 'route' => 'artikel.index', 'color' => 'bg-gradient-primary', 'icon' => 'ni ni-single-02'],
     ['title' => 'Total Jadwal', 'model' => \App\Models\Jadwal::class, 'route' => 'jadwal.index', 'color' => 'bg-gradient-danger', 'icon' => 'ni ni-hat-3'],
-    ['title' => 'Total Konsultan', 'model' => \App\Models\Staff::class, 'route' => 'staff.index', 'color' => 'bg-gradient-warning', 'icon' => 'ni ni-check-bold'],
-    ['title' => 'In House Training', 'model' => \App\Models\Training::class, 'route' => 'training.index', 'color' => 'bg-gradient-success', 'icon' => 'ni ni-books']
+    ['title' => 'Sertifikasi', 'model' => \App\Models\Sertifikasi::class, 'route' => 'sertifikasi.index', 'color' => 'bg-gradient-info', 'icon' => 'ni ni-atom'],
+    ['title' => 'Public Training', 'model' => \App\Models\PublicTraining::class, 'route' => 'publictraining.index', 'color' => 'bg-gradient-secondary', 'icon' => 'ni ni-bullet-list-67'],
    ];
 }elseif ($user && $user->role === 'user'){
 $cards = [
   ['title'=>'Public Training', 'route'=>'publictraining.index', 'icon'=>'fa-solid fa-chalkboard-teacher', 'color'=>'bg-gradient-success'],
   ['title'=>'Sertifikasi', 'route'=>'sertifikasi.index', 'icon'=>'fa-solid fa-certificate', 'color'=>'bg-gradient-warning'],
   ['title'=>'In House Training', 'route'=>'training.index', 'icon'=>'fa-solid fa-building', 'color'=>'bg-gradient-warning'],
-  ['title'=>'Konsultan', 'route'=>'staff.index', 'icon'=>'fa-solid fa-user-tie', 'color'=>'bg-gradient-warning'],
+  ['title'=>'Konsultan', 'route'=>'konsultan.index', 'icon'=>'fa-solid fa-user-tie', 'color'=>'bg-gradient-warning'],
 ];
 
 }

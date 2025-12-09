@@ -34,16 +34,7 @@ class RegisterController extends Controller
             'role' => 'user'
         ]);
 
-       
-        // if ($response->successful()) {
-        //     return redirect()->route('register.form')->with('success', 'Registration successful!');
-        // }
-
-        // $data = $response->json();
-
-// Periksa apakah response memiliki key 'message'
-        // $message = $data['message'] ?? 'Registration failed. Please try again.';
-        return redirect()->route('register.form')->with('success', 'Registration successful!');
+        return redirect()->route('welcome')->with('success', 'Registration successful!');
 
     }
 }

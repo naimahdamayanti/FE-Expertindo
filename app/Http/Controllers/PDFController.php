@@ -1,25 +1,25 @@
 <!-- 
-
 namespace App\Http\Controllers;
 
+use App\Models\Jadwal;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PDFController extends Controller
 {
-    public function exportPDF()
+    
+        public function jadwal($id)
     {
-        // Ambil data dari API backend
-        $response = Http::get('http://localhost:8080/Absensi');
-        $absensi = $response->json();
-
-        //  dd($absensi);
-        // Pastikan respons adalah array
-        $absen = collect($absensi);
-
-        // Generate PDF
-        $pdf = Pdf::loadView('pdf.pdf-absensi', ['absensi' => $absen]);
-        return $pdf->download('daftar-hadir.pdf');
+        $jadwalTraining = Jadwal::findOrFail($id);
+        
+        // Load view dari folder pdf/jadwal.blade.php
+        $pdf = PDF::loadView('pdf.jadwal', compact('jadwal'));
+        
+        // Download PDF
+        return $pdf->download('jadwal-'.$jadwal->id.'.pdf');
+        
+        // Atau untuk preview di browser:
+        // return $pdf->stream('jadwal-'.$jadwal->id.'.pdf');
     }
 } -->

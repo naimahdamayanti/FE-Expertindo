@@ -22,63 +22,90 @@ class TrainingController extends Controller
     public function store(Request $request){
 
         request()->validate([
-            'id_training' => 'required',
-            'judul' => 'required',            
-            'isi' => 'required', 
-            'tgl_rilis' => 'required',           
+            'judul' => 'required',  
+            'isi' => 'required',
+            'tgl_rilis' => 'required',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',    
+            
         ]);
 
-        $training = Training::create($request->all());
-        return redirect()->route('training.index')->with('success', 'Data Berhasil Ditambahkan');
+        $data = [
+        'judul' => $request->judul,
+        'isi' => $request->isi,
+        'tgl_rilis' => $request->tgl_rilis,
+    ];
+
+    if ($request->hasFile('gambar')) {
+        // Buat folder jika belum ada
+        if (!file_exists(public_path('images/inhouse'))) {
+            mkdir(public_path('images/inhouse'), 0777, true);
+        }
+        
+        $image = $request->file('gambar');
+        $imageName = time() . '.' . $image->extension();
+        $image->move(public_path('images/inhouse'), $imageName);
+        $data['gambar'] = $imageName;
+    }
+
+    Training::create($data);
+    
+    return redirect()->route('training.index')->with('create', 'Data Berhasil Ditambahkan');
     }
 
     public function show(string $id)
     {
-        //
+        $training = Training::findOrFail($id);
+        return view('training.show', compact('training'));
     }
 
-    public function edit(string $id_training){
-        $training = Training::findOrFail($id_training);
+    public function edit(string $id){
+        $training = Training::findOrFail($id);
         return view('training.edit', ['training' => $training]);
     }
 
     public function update(Request $request, string $id)
     {
-        
-
         $request->validate([
             'judul' => 'required|string',
             'isi' => 'required|string',
-            'tgl_rilis' => 'required|date'
+            'tgl_rilis' => 'required|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-    
-        // Kirim data ke API untuk update
-        $response = Http::put("http://localhost:8080/training/{$id}", [
+
+        $training = Training::findOrFail($id);
+        
+        $data = [
             'judul' => $request->judul,
             'isi' => $request->isi,
-            'tgl_rilis' => $request->tgl_rilis
-        ]);
-        if ($response->successful()) {
-            return redirect()->route('training.index')->with('success', 'Data training berhasil diperbarui.');
-        } else {
-            // Tampilkan pesan error dari API
-            $errorMessage = $response->json()['message'] ?? 'Gagal memperbarui data training. Silakan coba lagi.';
-            return back()->with('error', $errorMessage);
+            'tgl_rilis' => $request->tgl_rilis,
+        ];
+
+        if ($request->hasFile('gambar')) {
+            if ($training->gambar && file_exists(public_path('images/inhouse/' . $training->gambar))) {
+                unlink(public_path('images/inhouse/' . $training->gambar));
+            }
+            
+            $image = $request->file('gambar');
+            $imageName = time() . '.' . $image->extension();
+            $image->move(public_path('images/inhouse'), $imageName);
+            $data['gambar'] = $imageName;
         }
+
+        $training->update($data);
+        
+        return redirect()->route('training.index')->with('update', 'Data berhasil diupdate');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $response = Http::delete("http://localhost:8080/training/{$id}");
-
-        // Cek respons dari API
-        if ($response->successful()) {
-            return redirect()->route('training.index')->with('success', 'training berhasil dihapus.');
-        } else {
-            return redirect()->route('training.index')->with('error', 'Gagal menghapus data training.');
+        $training = training::findOrFail($id);
+        
+        if ($training->gambar && file_exists(public_path('images/inhouse/' . $training->gambar))) {
+            unlink(public_path('images/inhouse/' . $training->gambar));
         }
+        
+        $training->delete();
+        
+        return redirect()->route('training.index')->with('delete', 'Data berhasil dihapus');
     }
 }

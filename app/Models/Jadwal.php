@@ -8,11 +8,14 @@ class Jadwal extends Model
 {
     protected $table = 'jadwal';
 
-    protected $primaryKey = 'id_kategori';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'id_sertifikasi',
-        'kategori',
-        'tema',
+        'id_public',
+        'judul_training',
+        'tgl_mulai',
+        'tgl_selesai',
+        'lokasi',
     ];
 
     public function sertifikasi()

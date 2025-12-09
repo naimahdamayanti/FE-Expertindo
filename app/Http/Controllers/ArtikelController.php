@@ -21,63 +21,90 @@ class ArtikelController extends Controller
     public function store(Request $request){
 
         request()->validate([
-            'id_artikel' => 'required',
-            'judul' => 'required',            
-            'isi' => 'required',            
-            'tgl_rilis' => 'required'
+            'judul' => 'required',  
+            'tgl_rilis' => 'required',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',         
+            'isi' => 'required',      
+            
         ]);
 
-        $artikel = Artikel::create($request->all());
-        return redirect()->route('artikel.index')->with('success', 'Data Berhasil Ditambahkan');
+        $data = [
+        'judul' => $request->judul,
+        'tgl_rilis' => $request->tgl_rilis,
+        'isi' => $request->isi,
+    ];
+
+    if ($request->hasFile('gambar')) {
+        // Buat folder jika belum ada
+        if (!file_exists(public_path('images/artikel'))) {
+            mkdir(public_path('images/artikel'), 0777, true);
+        }
+        
+        $image = $request->file('gambar');
+        $imageName = time() . '.' . $image->extension();
+        $image->move(public_path('images/artikel'), $imageName);
+        $data['gambar'] = $imageName;
+    }
+
+    Artikel::create($data);
+    
+    return redirect()->route('artikel.index')->with('create', 'Data Berhasil Ditambahkan');
     }
 
     public function show(string $id)
     {
-        //
+        $artikel = Artikel::findOrFail($id);
+        return view('artikel.detail', compact('artikel'));
     }
 
-    public function edit(string $id_artikel){
-        $artikel = Artikel::findOrFail($id_artikel);
+    public function edit(string $id){
+        $artikel = Artikel::findOrFail($id);
         return view('artikel.edit', ['artikel' => $artikel]);
     }
 
     public function update(Request $request, string $id)
     {
-        
-
         $request->validate([
             'judul' => 'required|string',
+            'tgl_rilis' => 'required|date',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'isi' => 'required|string',
-            'tgl_rilis' => 'required|date'
         ]);
-    
-        // Kirim data ke API untuk update
-        $response = Http::put("http://localhost:8080/Artikel/{$id}", [
+
+        $artikel = Artikel::findOrFail($id);
+        
+        $data = [
             'judul' => $request->judul,
+            'tgl_rilis' => $request->tgl_rilis,
             'isi' => $request->isi,
-            'tgl_rilis' => $request->tgl_rilis
-        ]);
-        if ($response->successful()) {
-            return redirect()->route('artikel.index')->with('success', 'Data artikel berhasil diperbarui.');
-        } else {
-            // Tampilkan pesan error dari API
-            $errorMessage = $response->json()['message'] ?? 'Gagal memperbarui data artikel. Silakan coba lagi.';
-            return back()->with('error', $errorMessage);
+        ];
+
+        if ($request->hasFile('gambar')) {
+            if ($artikel->gambar && file_exists(public_path('images/artikel/' . $artikel->gambar))) {
+                unlink(public_path('images/artikel/' . $artikel->gambar));
+            }
+            
+            $image = $request->file('gambar');
+            $imageName = time() . '.' . $image->extension();
+            $image->move(public_path('images/artikel'), $imageName);
+            $data['gambar'] = $imageName;
         }
+
+        $artikel->update($data);
+        
+        return redirect()->route('artikel.index')->with('update', 'Data berhasil diupdate');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $response = Http::delete("http://localhost:8080/Artikel/{$id}");
-
-        // Cek respons dari API
-        if ($response->successful()) {
-            return redirect()->route('artikel.index')->with('success', 'Artikel berhasil dihapus.');
-        } else {
-            return redirect()->route('artikel.index')->with('error', 'Gagal menghapus data artikel.');
+        $artikel = Artikel::findOrFail($id);
+        
+        if ($artikel->gambar && file_exists(public_path('images/artikel/' . $artikel->gambar))) {
+            unlink(public_path('images/artikel/' . $artikel->gambar));
         }
+        
+        $artikel->delete();
+        
+        return redirect()->route('artikel.index')->with('delete', 'Data berhasil dihapus');
     }
 }

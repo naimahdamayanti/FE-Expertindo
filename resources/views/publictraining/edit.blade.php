@@ -1,68 +1,238 @@
 @extends('layout')
-@section('title','Edit Daftar Hadir')
-@section('judul','Form Edit Daftar Hadir')
+@section('title','Edit Public Training')
+@section('judul','Form Edit Public Training')
 @section('isi')
-<form action="{{ route('absensi.update', $absensi->id_kehadiran) }}" method="post">
-        @csrf
-        <div class="form-group mb-2">
-            <label>ID Kehadiran</label>
-            <input type="text" name="id_kehadiran" value="{{ old('id_kehadiran') }}" class="form-control">
-        </div>
-        <div class="form-group mb-2">
-            <label>NPM</label>
-            <input type="text" name="npm" value="{{ old('npm') }}" class="form-control">
-        </div>
-        <div class="form-group mb-2">
-            <label>ID Dosen</label>
-            <input type="text" name="id_dosen" value="{{ old('id_dosen') }}" class="form-control">
-        </div>
 
-        <div class="form-group mb-2">
-        <label>Pertemuan</label>
-        <select class="form-control" name="pertemuan">
-            <option value="">--Pilih Pertemuan--</option>
-            @for ($i = 1; $i <= 16; $i++)
-                <option value="{{ $i }}" {{ old('pertemuan') == $i ? 'selected' : '' }}>Pertemuan {{ $i }}</option>
-            @endfor
-        </select>
-        </div>
-        <div class="form-group mb-2">
-            <label>Keterangan</label>
-            <select name="keterangan" class="form-control">
-                <option value="">--Pilih Keterangan--</option>
-                <option value="H" {{ old('keterangan') == 'H' ? 'selected' : '' }}>Hadir</option>
-                <option value="I" {{ old('keterangan') == 'I' ? 'selected' : '' }}>Izin</option>
-                <option value="S" {{ old('keterangan') == 'S' ? 'selected' : '' }}>Sakit</option>
-                <option value="A" {{ old('keterangan') == 'A' ? 'selected' : '' }}>Absen</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">Save</button>
-        </div>
-    </form>
+<style>
+    .page-header {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+    }
 
+    .form-container {
+        background-color: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        max-width: 700px;
+        margin: 0 auto;
+    }
 
+    .form-group {
+        margin-bottom: 25px;
+    }
 
-    {{--  javascript untuk validasi form bootstrap di atas  --}}
-    
-    {{-- <script>// Example starter JavaScript for disabling form submissions if there are invalid fields
-            (() => {
-              'use strict'
+    .form-group label {
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 14px;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s;
+        background-color: #fafafa;
+    }
+
+    .form-control-modern:focus {
+        outline: none;
+        border-color: #f5576c;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+    }
+
+    .form-control-modern:hover {
+        border-color: #b0b0b0;
+    }
+
+    select.form-control-modern {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        padding-right: 40px;
+    }
+
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .input-icon-wrapper .form-control-modern {
+        padding-left: 45px;
+    }
+
+    .btn-update {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 12px 35px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(245, 87, 108, 0.4);
+        color: white;
+    }
+
+    .btn-back {
+        background-color: #f0f0f0;
+        color: #666;
+        padding: 12px 35px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-back:hover {
+        background-color: #e0e0e0;
+        border-color: #d0d0d0;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        border-left: 4px solid;
+    }
+
+    .alert-danger {
+        background-color: #fee;
+        border-left-color: #e74c3c;
+        color: #c33;
+    }
+
+    .alert ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .alert li {
+        margin: 5px 0;
+    }
+
+    .badge-edit {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 25px;
+        }
+
+        .page-header {
+            padding: 20px;
+        }
+
+        .page-header h2 {
+            font-size: 22px;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-update, .btn-back {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="page-header">
+        <h2><i class="fas fa-edit"></i> Edit Public Training</h2>
+    </div>
+
+    <div class="form-container">
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong><i class="fas fa-exclamation-circle"></i> Terdapat kesalahan!</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        <form action="{{ route('publictraining.update', $publictraining->id_public) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
             
-              // Fetch all the forms we want to apply custom Bootstrap validation styles to
-              const forms = document.querySelectorAll('.needs-validation')
-            
-              // Loop over them and prevent submission
-              Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                  if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                  }
-            
-                  form.classList.add('was-validated')
-                }, false)
-              })
-            })()
-    </script> --}}
+            <div class="form-group">
+                <label for="gambar">
+                    <i class="fas fa-image"></i> Gambar
+                    <span class="badge-edit">EDIT MODE</span>
+                </label>
+                <div class="input-icon-wrapper">
+                    <i class="fas fa-image"></i>
+                    <input 
+                        type="file" 
+                        name="gambar" 
+                        id="gambar"
+                        class="form-control-modern"
+                        accept="image/*"
+                        onchange="previewImage(event)"
+                        value="{{ $publictraining->gambar}}"
+                    >
+                </div>
+                <div id="imagePreview" style="margin-top: 10px;"></div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-update">
+                    <i class="fas fa-save"></i> Update
+                </button>
+                <a href="{{ route('publictraining.index') }}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection        

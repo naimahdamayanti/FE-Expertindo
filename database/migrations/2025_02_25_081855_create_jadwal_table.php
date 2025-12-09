@@ -14,8 +14,10 @@ return new class extends Migration
     {
         Schema::create('jadwal', function (Blueprint $table) {
             $table->id();
-            $table->string('kategori');
-            $table->string('tema');
+            $table->string('judul_training');
+            $table->date('tgl_mulai');
+            $table->date('tgl_selesai');
+            $table->string('lokasi');
             $table->timestamps();
         });
     }

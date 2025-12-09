@@ -32,201 +32,250 @@
 </div>
 @endif
 
-<div class="container">
-    <!-- Action Buttons -->
-    <div class="mb-4">
-        <a href="{{ route('publictraining.create') }}">
-            <button class="btn btn-icon btn-3 btn-success" type="button">
-                <span class="btn-inner--icon me-2"><i class="fas fa-plus"></i></span>
-                <span class="btn-inner--text">Tambah Public Training</span>
-            </button>
-        </a>
-        <a href="{{ route('export-pdf') }}" target="_blank">
-            <button class="btn btn-icon btn-3 btn-primary" type="button">
-                <span class="btn-inner--icon"><i class="ni ni-cloud-download-95"></i></span>
-                <span class="btn-inner--text">Export ke PDF</span>
-            </button>
-        </a>
-    </div>
+    <!-- CSS untuk styling card grid -->
+<style>
 
-    <!-- Main Content -->
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-        <!-- Header with Back Button -->
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('dashboard') }}" class="text-danger fs-3">
-                    ↩
+    .training-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .training-header h2 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .training-grid-container {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .search-box {
+            max-width: 400px;
+            margin: 0 auto 40px;
+            position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 12px 20px 12px 45px;
+        border: 2px solid #e0e0e0;
+        border-radius: 25px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.1);
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .training-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .training-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .training-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .training-card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background-color: #e9ecef;
+    }
+
+    .training-card-body {
+        padding: 15px;
+    }
+
+    .training-card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 10px 0;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .training-card-meta {
+        font-size: 13px;
+        color: #666;
+        margin: 5px 0;
+    }
+
+    .training-card-meta i {
+        margin-right: 5px;
+        color: #007bff;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+        font-size: 16px;
+    }
+
+        .btn-edit,
+    .btn-delete {
+        padding: 6px 12px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-edit {
+        background-color: #ffc107;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-edit:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<div class="container-fluid mb-3">
+    <a href="{{ url('/dashboard') }}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Public Training
+    </a>
+    <div class="row">
+        <div class="col-12 text-end">
+            @if(session('user') && session('user')->role === 'admin')
+                <a href="{{ route('publictraining.create') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus"></i> Tambah Public Training
                 </a>
-                <h2 class="text-danger mb-0">Public Training</h2>
-            </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="mb-4">
-            <div class="input-group" style="max-width: 400px;">
-                <span class="input-group-text">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input 
-                    type="text" 
-                    id="searchInput"
-                    class="form-control"
-                    placeholder="Cari training..." 
-                />
-            </div>
-        </div>
-    </div>
-
-    <!-- Training Grid -->
-    <div id="trainingGrid" class="row g-4">
-        @forelse($publictrainings as $public)
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="training-card card h-100 hover-shadow" 
-                     data-name="{{ strtolower($public->name) }}"
-                     style="cursor: pointer;">
-                    <div class="card-body text-center position-relative">
-                        <!-- Admin Controls -->
-                        @auth
-                            @if(auth()->user()->role === 'admin')
-                                <div class="position-absolute top-0 end-0 p-2 admin-controls" style="opacity: 0; transition: opacity 0.3s;">
-                                    <a href="{{ route('publictraining.edit', $public->id) }}" 
-                                       class="btn btn-sm btn-primary rounded-circle p-2 me-1"
-                                       onclick="event.stopPropagation()">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('publictraining.destroy', $public->id) }}" 
-                                          method="POST" 
-                                          class="d-inline"
-                                          onsubmit="event.stopPropagation(); return confirm('Apakah Anda yakin ingin menghapus training ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="btn btn-sm btn-danger rounded-circle p-2">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            @endif
-                        @endauth
-
-                        <!-- Training Content -->
-                        <a href="{{ route('schedule.index', ['training' => $public->slug ?? $public->id]) }}" 
-                           class="text-decoration-none text-dark">
-                            <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 120px;">
-                                <img 
-                                    src="{{ asset('storage/' . $public->image) }}" 
-                                    alt="{{ $public->name }}"
-                                    data-fallback="{{ asset('template/assets/img/placeholder-training.png') }}"
-                                    class="img-fluid mb-3"
-                                    style="max-height: 120px; object-fit: contain;"
-                                    onerror="this.src=this.dataset.fallback"
-                                />
-                                <p class="text-center fw-bold mb-0">
-                                    {{ $public->name }}
-                                </p>
-                                @if($public->description)
-                                    <small class="text-muted text-center mt-2">
-                                        {{ Str::limit($public->description, 60) }}
-                                    </small>
-                                @endif
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <div class="fs-1 mb-3">📚</div>
-                        <p class="text-muted mb-3">Belum ada training yang ditambahkan</p>
-                        @auth
-                            @if(auth()->user()->role === 'admin')
-                                <a href="{{ route('publictraining.create') }}" 
-                                   class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>
-                                    Tambah training pertama
-                                </a>
-                            @endif
-                        @endauth
-                    </div>
-                </div>
-            </div>
-        @endforelse
-    </div>
-
-    <!-- Empty Search Result -->
-    <div id="emptySearch" class="d-none">
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <div class="fs-1 mb-3">🔍</div>
-                <p class="text-muted">Tidak ada training yang ditemukan</p>
-            </div>
+            @endif
         </div>
     </div>
 </div>
 
-@push('styles')
-<style>
-.hover-shadow {
-    transition: all 0.3s ease;
-}
+<div class="container-fluid">
+    <div class="training-header">
+        <h2>Public Training</h2>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari" onkeyup="searchPublicTraining()">
+        </div>
+    </div>
+<div class="training-grid" id="trainingGrid">
+    @forelse($publictraining as $data)
+    <a href="{{ route('jadwal.index', $data->id_public) }}" class="training-card" data-title="{{ strtolower($data->gambar ?? '') }}">
+        @if($data->gambar)
+            <img src="{{ asset('images/publictraining/' . $data->gambar) }}" 
+                alt="{{ $data->gambar ?? 'Public Training' }}" 
+                class="training-card-image">
+        @endif
+        
+        <div class="training-card-body">
+            @if(session('user') && session('user')->role === 'admin')
+            <div class="training-actions">
+                <a href="{{ route('publictraining.edit', $data->id_public) }}" 
+                class="btn-edit" 
+                onclick="event.stopPropagation();">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <form action="{{ route('publictraining.destroy', $data->id_public) }}" 
+                    method="POST" 
+                    style="display: inline;" 
+                    onclick="event.stopPropagation();">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" 
+                            class="btn-delete" 
+                            onclick="return confirm('Apakah Anda yakin ingin menghapus pelatihan ini?');">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+            @endif
+        </div>
+    </a>
+    @empty
+    <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+        <i class="fas fa-inbox" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+        <p style="color: #999; font-size: 16px;">Belum ada pelatihan tersedia</p>
+    </div>
+    @endforelse
+</div>
+</div>
 
-.hover-shadow:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    transform: translateY(-5px);
-}
-
-.training-card:hover .admin-controls {
-    opacity: 1 !important;
-}
-
-.training-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-}
-
-.training-card:hover {
-    border-color: #b0b0b0;
-}
-</style>
-@endpush
-
-@push('scripts')
+<!-- JavaScript untuk Search -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const trainingCards = document.querySelectorAll('.training-card');
-    const trainingGrid = document.getElementById('trainingGrid');
-    const emptySearch = document.getElementById('emptySearch');
+function searchTraining() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const grid = document.getElementById('trainingGrid');
+    const cards = grid.getElementsByClassName('training-card');
+    const noResults = document.getElementById('noResults');
+    let visibleCount = 0;
 
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase().trim();
-        let visibleCount = 0;
-
-        trainingCards.forEach(card => {
-            const parentCol = card.closest('.col-6, .col-md-4, .col-lg-3');
-            const trainingName = card.getAttribute('data-name');
-            
-            if (trainingName.includes(searchTerm)) {
-                parentCol.style.display = 'block';
-                visibleCount++;
-            } else {
-                parentCol.style.display = 'none';
-            }
-        });
-
-        // Show/hide empty state
-        if (visibleCount === 0 && searchTerm !== '') {
-            trainingGrid.classList.add('d-none');
-            emptySearch.classList.remove('d-none');
+    for (let i = 0; i < cards.length; i++) {
+        const title = cards[i].getElementsByClassName('training-card-title')[0];
+        const txtValue = title.textContent || title.innerText;
+        
+        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+            cards[i].style.display = "";
+            visibleCount++;
         } else {
-            trainingGrid.classList.remove('d-none');
-            emptySearch.classList.add('d-none');
+            cards[i].style.display = "none";
         }
-    });
-});
+    }
+
+    // Show/hide no results message
+    if (visibleCount === 0) {
+        noResults.style.display = 'block';
+        grid.style.display = 'none';
+    } else {
+        noResults.style.display = 'none';
+        grid.style.display = 'grid';
+    }
+}
 </script>
-@endpush
+
 
 @endsection

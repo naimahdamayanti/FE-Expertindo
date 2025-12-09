@@ -340,16 +340,7 @@
             <label for="password_confirmation" class="form-label">Ulang Kata Sandi</label>
             <input type="password" name="password_confirmation" placeholder="Ulangi Kata Sandi" class="form-control" id="password_confirmation" required>
         </div>
-        <!-- <div class="mb-3">
-            <label for="role" class="form-label">Role</label>
-            <select name="role" class="form-control" id="role" required>
-                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="dosen" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
-            </select>
-            @error('role')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div> -->
+        
         <button type="submit" class="btn btn-primary w-100">Daftar</button>
         <div class="divider">atau</div>
 
